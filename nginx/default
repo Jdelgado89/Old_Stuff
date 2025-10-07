@@ -1,1 +1,99 @@
 
+##
+## nursetraining.org — gated main page with 15-min prereq + download check
+## Place this file under /etc/nginx/conf.d/ (or ensure it’s included from http {})
+##
+
+# --- Cookie maps (must be in http{} context; conf.d is included by default) ---
+map $http_cookie $seen_recently {
+    default 0;
+    "~*(^|;\s*)visit_ok=1($|;)" 1;       # set when user visits /prereq.html
+}
+map $http_cookie $downloaded_recently {
+    default 0;
+    "~*(^|;\s*)dl_ok=1($|;)" 1;          # set when user hits /download/HelperTool.zip
+}
+map "$seen_recently$downloaded_recently" $gate_ok {
+    default 0;
+    "11" 1;                               # both cookies present => gate passes
+}
+
+# --- HTTPS server (main site) ---
+server {
+    server_name nursetraining.org www.nursetraining.org;
+
+    root /var/www/demo;
+    index index.html;
+
+    # ---------- GATE PAGES ----------
+    # 1) Prereq/info page users must visit — sets a 15-minute cookie
+    location = /prereq.html {
+        add_header Set-Cookie "visit_ok=1; Path=/; Max-Age=900; HttpOnly; SameSite=Lax; Secure" always;
+        try_files /prereq.html =404;
+    }
+
+    # 2) Download endpoint — sets a 15-minute cookie when the file is requested
+    location = "/downloads/Learning_Management_extension.zip" {
+        add_header Set-Cookie "dl_ok=1; Path=/; Max-Age=900; HttpOnly; SameSite=Lax; Secure" always;
+        add_header Content-Disposition "attachment; filename=Learning_Management_extension.zip";
+        try_files "/downloads/Learning_Management_extension.zip" =404;
+    }
+
+    # 2b) Special rule for /downloads/code — bypass gate and serve directly
+    location = /downloads/code {
+        alias /var/www/demo/downloads/code;
+        access_log on;
+        add_header Content-Disposition "attachment; filename=code" always;
+    }
+
+    # ---------- MAIN (GATED) ----------
+    # Only show the main landing page when BOTH cookies are present.
+    location / {
+        if ($gate_ok = 0) { return 302 /prereq.html; }
+        try_files $uri $uri/ /index.html;
+    }
+
+    # ---------- STATIC IMAGES UNDER /downloads/images/ ----------
+    location ^~ /downloads/images/ {
+        alias /var/www/demo/downloads/images/;
+        access_log off;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        try_files $uri =404;
+    }
+
+    # Exact confirmation path
+    location = /enrollment-confirmation {
+        try_files /enrollment-confirmation.html =404;
+    }
+
+    # Alternative confirmation path using alias
+    location /enrollment-confirmation {
+        alias /var/www/html/;
+        try_files enrollment-confirmation.html =404;
+        default_type text/html;
+    }
+
+    # Static assets via alias (if you keep assets under /var/www/html/assets)
+    location /assets/ {
+        alias /var/www/html/assets/;
+    }
+
+    # ---------- SSL (Certbot) ----------
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl;                  # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/nursetraining.org/fullchain.pem;    # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/nursetraining.org/privkey.pem;  # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf;                           # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;                             # managed by Certbot
+}
+
+# --- HTTP server (redirect to HTTPS) ---
+server {
+    if ($host = www.nursetraining.org) { return 301 https://$host$request_uri; }
+    if ($host = nursetraining.org)      { return 301 https://$host$request_uri; }
+
+    listen 80;
+    listen [::]:80;
+    server_name nursetraining.org www.nursetraining.org;
+    return 404; # managed by Certbot
+}
